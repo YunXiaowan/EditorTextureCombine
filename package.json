@@ -1,7 +1,7 @@
 {
   "name": "com.yunxiao.texturecombine",
-  "description": "\u7528\u4e8e\u5c06\u4e0d\u540c\u7684Pbr\u8d34\u56fe\u5408\u5e76\u4e3a\u7b26\u5408unitypbr\u6d41\u7a0b\u7684mask",
-  "version": "0.0.1",
+  "description": "\u7528\u4e8e\u5c06\u4e0d\u540c\u7684Pbr\u8d34\u56fe\u5408\u5e76\u4e3a\u7b26\u5408unitypbr\u6d41\u7a0b\u7684mask\u0003\u0003\n\n- 0.0.2 Update:\n\u652f\u6301\u4ec5\u4e00\u5f20roughness\u7684\u64cd\u4f5c",
+  "version": "0.0.2",
   "unity": "2020.2",
   "displayName": "TextureCombine",
   "keywords": [],

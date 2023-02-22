@@ -15,8 +15,8 @@ namespace TextureCombine
 
         #region Data
 
-        private Texture2D _roughnessOrSmoothnessTex;
-        private Texture2D _metallicTex;
+        private Texture2D _roughnessOrSmoothnessTex = null;
+        private Texture2D _metallicTex = null;
         private bool _isRoughness = false;
         private string _savePath;
         private string _saveName;
@@ -122,26 +122,54 @@ namespace TextureCombine
 
         private void Combine()
         {
-            if (_roughnessOrSmoothnessTex.width * _roughnessOrSmoothnessTex.height !=
-                _metallicTex.width * _metallicTex.height)
+            if (_roughnessOrSmoothnessTex == null && _metallicTex == null)
             {
-                EditorGUILayout.HelpBox("纹理大小不一致!", MessageType.Error);
                 return;
             }
+
+            if (_roughnessOrSmoothnessTex && _metallicTex)
+            {
+                if (_roughnessOrSmoothnessTex.width * _roughnessOrSmoothnessTex.height !=
+                    _metallicTex.width * _metallicTex.height)
+                {
+                    EditorGUILayout.HelpBox("纹理大小不一致!", MessageType.Error);
+                    return;
+                }
+            }
             
+            int width, height;
+            if (_roughnessOrSmoothnessTex != null)
+            {
+                width = _roughnessOrSmoothnessTex.width;
+                height = _roughnessOrSmoothnessTex.height;
+            }
+            else if (_metallicTex != null)
+            {
+                width = _metallicTex.width;
+                height = _metallicTex.height;
+            }
+
             Texture2D createdTex = new Texture2D(_roughnessOrSmoothnessTex.width, _roughnessOrSmoothnessTex.height);
             // 使用RT拷贝以忽略图像Read/Write检查
-            Texture2D readR = GetReadTexture(_roughnessOrSmoothnessTex,_isRoughness);
-            Texture2D readM = GetReadTexture(_metallicTex);
-            
+            Texture2D readR = null, readM = null;
+            if (_roughnessOrSmoothnessTex)
+            {
+                readR = GetReadTexture(_roughnessOrSmoothnessTex,_isRoughness);
+            }
+
+            if (_metallicTex)
+            {
+                readM = GetReadTexture(_metallicTex);
+            }
+
             Color colorR,colorM;
             for (int i = 0; i < createdTex.width; i++)
             {
                 for (int j = 0; j < createdTex.height; j++)
                 {
-                    colorR = readR.GetPixel(i, j);
-                    colorM = readM.GetPixel(i, j);
-                    createdTex.SetPixel(i,j,new Color(colorM.r, 0, 0, colorR.r));
+                    colorR = readR == null ? Color.black : readR.GetPixel(i, j);
+                    colorM = readM == null ? Color.black : readM.GetPixel(i, j);
+                    createdTex.SetPixel(i,j,new Color(colorM.r, 1, 1, colorR.r));
                 }
             }
 
@@ -182,6 +210,7 @@ namespace TextureCombine
                     Color getColor;
                     for (int j = 0; j < outTex.height; j++)
                     {
+                        // One Minus to change roughness => smoothness
                         getColor = outTex.GetPixel(i, j);
                         outTex.SetPixel(i,j,new Color(1 - getColor.r, 1 - getColor.g, 1-getColor.b));
                     }
